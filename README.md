@@ -1,3 +1,39 @@
+## To just try the application
+
+Create a host file entry. 
+
+```
+127.0.0.1       frontend.example
+```
+
+Run the frontend application
+
+```
+npm --prefix frontend start 
+```
+
+Run the API in a separate terminal window. 
+
+
+```
+npm --prefix api start
+```
+
+Browse to https://frontend.example:4200/.  Try logging in/sign up.  
+
+Watch the network tab in developer tools for: 
+
+* /api/uiconfig - dynamically loaded configuration for the Angular application
+* authorize and token - for ID and Access Tokens
+* /api/protected - secure API calls being made with Authorization headers
+
+
+
+
+
+## Instructions from scratch
+
+
 ## Generate a new project. 
 
 npm init
@@ -7,7 +43,7 @@ Have a look at it
 
 ```
 cd frontend
-npx -p @angular/cli ng serve
+npm start
 ```
 
 http://localhost:4200/
@@ -164,7 +200,7 @@ You will need to stop and restart the Angular application.
 
 ```
 Ctrl+C
-npx -p @angular/cli ng serve
+npm start
 ```
 
 Now browse to
@@ -372,7 +408,7 @@ You will need to stop and restart the Angular application.
 
 ```
 Ctrl C
-npx -p @angular/cli ng serve
+npm start
 ```
 
 Now open https://frontend.example:4200 in your browser and accept the warning about a self signed certificate. Try the login, logout functionality, everything should work as before. 
