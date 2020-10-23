@@ -341,10 +341,41 @@ Then try browsing to http://localhost:3000/protected and get a 401 Unauthorized 
 We need to get the Angular application to request an Access Token, but to not disrupt the user experience, we want to do this silently.  
 And in order to do that, we need to make some changes to the frontend so that it is considered a First Party application by Auth0. 
 
-This means we need to use a non-localhost domain, and apply a certificate. 
+This means we need to use a non-localhost domain, and apply a certificate. We'll go with `https://frontend.example:4200`. 
 
-Add an entry to the hosts file. 
+In Auth0's configuration for the application, add the new URL to all the existing entries with localhost, and save it.
+
+Add an entry to your hosts file. 
 
 ```
 127.0.0.1  frontend.example
 ```
+
+Generate a certificate for https://frontend.example
+
+```
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=GB/ST=London/L=London/O=Acme/OU=Org/CN=frontend.example"
+```
+
+Get Angular's server to use it, and disable host checking.  This goes in `angular.json` file under the same server.options. 
+
+```
+
+            "ssl": true,
+            "sslKey": "../key.pem",
+            "sslCert": "../cert.pem",
+            "host": "0.0.0.0",
+            "disableHostCheck": true,
+```            
+
+You will need to stop and restart the Angular application.  
+
+```
+Ctrl C
+npx -p @angular/cli ng serve
+```
+
+Now open https://frontend.example:4200 in your browser and accept the warning about a self signed certificate. Try the login, logout functionality, everything should work as before. 
+
+
+
