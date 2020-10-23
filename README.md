@@ -285,7 +285,7 @@ Stop the Express app.  Install JWT dependencies.
 ```
 cd api
 npm install --save express-jwt jwks-rsa express-jwt-authz
-``
+```
 
 
 Now in index.js, add these imports
