@@ -1,10 +1,18 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthModule } from '@auth0/auth0-angular';
+import { HttpClientModule } from '@angular/common/http';
+import { AppConfigService } from './app-config.service';
 
+
+export function initializeApp(appConfigService: AppConfigService) {
+  return (): Promise<any> => { 
+    return appConfigService.load();
+  }
+}
 
 @NgModule({
   declarations: [
@@ -13,12 +21,13 @@ import { AuthModule } from '@auth0/auth0-angular';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AuthModule.forRoot({
-      domain: 'mydemotenant.eu.auth0.com',
-      clientId: '89eVpU4Ixox4Llx6j7466L7pnK9lO4A8',
-    }),
+    HttpClientModule,
+    AuthModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    AppConfigService,
+    { provide: APP_INITIALIZER,useFactory: initializeApp, deps: [AppConfigService], multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
