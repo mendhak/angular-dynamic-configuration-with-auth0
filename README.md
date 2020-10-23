@@ -271,3 +271,80 @@ export interface IAppConfig {
 
 Reload the page, and this time watch developer tools. You'll see a request made to /api/uiconfig, and the config is printed out.  The application's normal login and logout functionality should work as normal.  
 
+
+## Advanced - securing API calls. 
+
+When calling APIs, we need to request an Access Token, then pass it as an Authorization: Bearer token in the header.  The API itself needs to validate the Access Token being passed in. 
+
+### Node - create a secure endpoint. 
+
+First create an API in the Auth0 tenant.  Give it an identifier of `my-api`.   This represents the Express API. 
+
+Stop the Express app.  Install JWT dependencies. 
+
+```
+cd api
+npm install --save express-jwt jwks-rsa express-jwt-authz
+``
+
+
+Now in index.js, add these imports
+
+```
+const jwt = require('express-jwt');
+const jwtAuthz = require('express-jwt-authz');
+const jwksRsa = require('jwks-rsa');
+
+```
+
+And add this middleware, with the tenant domain, and the API Audience. 
+
+```
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://mydemotenant.eu.auth0.com/.well-known/jwks.json`
+  }),
+
+  // Validate the audience and the issuer.
+  audience: 'my-api',
+  issuer: `https://mydemotenant.eu.auth0.com/`,
+  algorithms: ['RS256']
+});
+
+```
+
+
+Finally add a protected endpoint
+
+```
+router.get('/api/protected', checkJwt, function(req, res) {
+  res.json({
+    message: 'This is a protected endpoint.'
+  });
+});
+```
+
+Restart the Express app. 
+
+```
+npm start
+```
+
+Then try browsing to http://localhost:3000/protected and get a 401 Unauthorized error.  It's expecting an Access Token in the Authorization header.  
+
+
+### Angular - make the frontend a first party application
+
+We need to get the Angular application to request an Access Token, but to not disrupt the user experience, we want to do this silently.  
+And in order to do that, we need to make some changes to the frontend so that it is considered a First Party application by Auth0. 
+
+This means we need to use a non-localhost domain, and apply a certificate. 
+
+Add an entry to the hosts file. 
+
+```
+127.0.0.1  frontend.example
+```
