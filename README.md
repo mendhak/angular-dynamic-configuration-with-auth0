@@ -177,6 +177,7 @@ It's ready to serve the dynamic configuration to the frontend.
 
 
 
+## Get Angular to load Auth0 configuration dynamically
 
 Now we need to get the Angular frontend to load this configuration dynamically. 
 
@@ -217,7 +218,7 @@ export function initializeApp(appConfigService: AppConfigService) {
 ```
 
 Now create the `app-config.service.ts` which loads from `/api/uiconfig`.
-Note the IAppConfig which must match the properties coming back from the HTTP Request. 
+Note the IAppConfig which must match the JSON properties coming back from the HTTP Request. 
 The actual Auth0 configuration happens on the `authClientConfig.set` line. 
 
 
