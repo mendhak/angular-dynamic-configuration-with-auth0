@@ -1,12 +1,14 @@
 ## Generate a new project. 
 
 npm init
-npm install @angular/cli --save-dev
-npx ng new frontend
+npx -p @angular/cli ng new frontend
 
 Have a look at it
 
-npx ng serve
+```
+cd frontend
+npx -p @angular/cli ng serve
+```
 
 http://localhost:4200/
 
