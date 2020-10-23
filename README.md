@@ -50,7 +50,7 @@ import { AuthService } from '@auth0/auth0-angular';
 ```
 
 
-Inject and set up the login method:
+Inject and set up the login and logout methods:
 
 ```
   constructor(public auth: AuthService) {}
@@ -59,10 +59,40 @@ Inject and set up the login method:
     this.auth.loginWithRedirect();
   }
 
+  logout(): void {
+    this.auth.logout({ returnTo: window.location.origin });
+  }
+
+
 ```  
 
 In app.component.html, delete everything except the <router-outlet>.  
 
-Add this code to the page. 
+Add login and logout buttons. 
+
+```
+
+<p>This is the 'home page'</p>
+
+<button
+  *ngIf="(auth.isAuthenticated$ | async) === false"
+  (click)="loginWithRedirect()"
+>
+  Log in
+</button>
+
+<button *ngIf="auth.isAuthenticated$ | async" (click)="logout()">
+  Log out
+</button>
+
+<div *ngIf="auth.user$ | async as user">
+Some info about you:
+    <ul *ngIf="auth.user$ | async as user" >
+    <li>Name: {{ user.name }}</li>
+    <li>Email: {{ user.email }}</li>
+    </ul>
+</div>
+
+```
 
 

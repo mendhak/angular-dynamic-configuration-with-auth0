@@ -15,4 +15,8 @@ export class AppComponent {
     this.auth.loginWithRedirect();
   }
 
+  logout(): void {
+    this.auth.logout({ returnTo: window.location.origin });
+  }
+
 }
