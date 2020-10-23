@@ -12,7 +12,7 @@ Run the frontend application
 npm --prefix frontend start 
 ```
 
-Run the API in a separate terminal window. 
+In a separate terminal window, run the API
 
 
 ```
