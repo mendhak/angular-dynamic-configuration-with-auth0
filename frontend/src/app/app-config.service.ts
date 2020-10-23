@@ -24,7 +24,15 @@ export class AppConfigService {
                AppConfigService.settings = <IAppConfig>response;
 
                this.authClientConfig.set({ 
-                clientId: AppConfigService.settings.clientId, domain: AppConfigService.settings.domain
+                clientId: AppConfigService.settings.clientId, domain: AppConfigService.settings.domain,
+                httpInterceptor: { allowedList: [
+                    {
+                        uri: "/api/*",
+                        tokenOptions: {
+                            audience: "my-api"
+                        }
+                    }
+                ] }
                 });
 
                console.log('Config Loaded');

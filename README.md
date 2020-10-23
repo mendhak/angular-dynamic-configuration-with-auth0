@@ -379,3 +379,80 @@ Now open https://frontend.example:4200 in your browser and accept the warning ab
 
 
 
+### Configure Auth0 to secure calls to /api
+
+Now we can get Auth0 to intercept our http requests, and add an Authorization header.  First we need Auth0 to intercept our http requests.    
+
+In app.module.ts, import the interceptors required. 
+
+```
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthHttpInterceptor } from '@auth0/auth0-angular';
+```
+
+ add an HTTP_INTERCEPTORS to the providers section. 
+
+```
+  providers: [
+    AppConfigService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
+    { provide: APP_INITIALIZER,useFactory: initializeApp, deps: [AppConfigService], multi: true}
+  ],
+```
+
+Then in app-config.service.ts, modify the Auth0 Configuration to now include an `httpInterceptor`.  Here we are saying that all calls to `/api/` should have an Access Token with the `my-api` Audience. The Auth0 library will request this Access Token silently for us.  
+
+```
+this.authClientConfig.set({ 
+                clientId: AppConfigService.settings.clientId, domain: AppConfigService.settings.domain,
+                httpInterceptor: { allowedList: [
+                    {
+                        uri: "/api/*",
+                        tokenOptions: {
+                            audience: "my-api"
+                        }
+                    }
+                ] }
+                });
+```
+
+
+### Actually make a call to the API
+
+In protected.component.ts, import HTTPClient. 
+
+```
+import { HttpClient } from '@angular/common/http';
+```
+
+Modify the constructor and have it call the API. 
+
+
+```
+  public secureMessage;
+
+  constructor(public auth: AuthService, private http: HttpClient) {
+    this.getSecureMessage();
+  }
+
+  getSecureMessage(){
+    this.auth.isAuthenticated$.subscribe(isLoggedIn => {
+      if(isLoggedIn){
+        this.http.get('/api/protected').subscribe(result => this.secureMessage=result);
+      }
+    });
+  }
+
+
+```
+
+And display the secureMessage in the HTML. 
+
+```
+<div *ngIf="secureMessage">{{ secureMessage.message }}</div>
+```
+
+Now refresh the page, and watch the network traffic. 
+Note that the Auth0 `authorize` and `token` exchange happens twice, the first is for the normal ID Token, the second is for the Access Token with the right audience.  
+Note that the `/api/protected` request has an Authorization header, which is the Access Token.  
+
