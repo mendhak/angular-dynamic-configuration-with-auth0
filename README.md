@@ -1,4 +1,8 @@
-## Try the application
+
+Sample repo for [the writeup here](https://code.mendhak.com/angular-dynamic-configuration-with-auth0/)
+
+
+## To quickly try the application
 
 Create a host file entry. 
 
