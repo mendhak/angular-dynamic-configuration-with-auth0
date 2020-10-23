@@ -1,0 +1,12 @@
+
+
+<p>This is the 'home page'</p>
+
+<button
+  *ngIf="(auth.isAuthenticated$ | async) === false"
+  (click)="loginWithRedirect()"
+>
+  Log in
+</button>
+
+<router-outlet></router-outlet>
